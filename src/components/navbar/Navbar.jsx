@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import myFirstContext from "../context/SearchContext";
 import Guest from "../guest/Guest";
 import { OverlayTrigger } from "react-bootstrap";
 import CalenderInput from "../calender/CalenderInput";
-import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import dayjs from "dayjs";
 
@@ -12,14 +13,16 @@ const Navbar = ({
   initialCheckout = null,
   initialGuests = "Add guests",
 }) => {
+  const { searchData, setSearchData } = useContext(myFirstContext); // Use context to get and set search data
   const navigate = useNavigate();
-  
+
   const [guestData, setGuestData] = useState({
     adults: 0,
     children: 0,
     infants: 0,
     pets: 0,
   });
+
   const [dates, setDates] = useState([
     dayjs(initialCheckin).isValid() ? dayjs(initialCheckin) : null,
     dayjs(initialCheckout).isValid() ? dayjs(initialCheckout) : null,
@@ -39,9 +42,8 @@ const Navbar = ({
     return matches ? matches.map(Number) : [0, 0, 0, 0];
   };
 
- 
- 
   const handleGuestUpdate = (data) => setGuestData(data);
+
   const getGuestSummary = () => {
     const { adults, children, infants, pets } = guestData;
     const summary = [];
@@ -62,6 +64,15 @@ const Navbar = ({
       setDates([checkin, checkout]);
     }
     const guestSummary = getGuestSummary();
+
+    // Update the context with the new search data
+    setSearchData({
+      destination,
+      checkin: checkin?.format("YYYY-MM-DD"),
+      checkout: checkout?.format("YYYY-MM-DD"),
+      guestSummary,
+    });
+
     navigate("/card", {
       state: {
         destination,
@@ -103,7 +114,7 @@ const Navbar = ({
             <div className="d-flex align-items-center justify-content-center">
               <div
                 className="d-flex align-items-center border rounded-pill shadow-sm px-4 py-3 bg-white w-100"
-                style={{ maxWidth: "1070px", height: "8 0px" }}
+                style={{ maxWidth: "1070px", height: "80px" }}
               >
                 {/* Search criteria */}
                 <div className="text-center me-4 border-end pe-3 d-flex flex-column align-items-start">
@@ -111,7 +122,8 @@ const Navbar = ({
                   <input
                     type="text"
                     className="bg-transparent text-start border-0 p-0"
-                    placeholder="Search Destinations" style={{
+                    placeholder="Search Destinations"
+                    style={{
                       backgroundColor: "transparent",
                       outline: "none",
                     }}
@@ -125,13 +137,15 @@ const Navbar = ({
                 </div>
 
                 {/* Guest */}
-                <div className="text-center me-4 d-flex flex-column align-items-start position-relative"
+                <div
+                  className="text-center me-4 d-flex flex-column align-items-start position-relative"
                   style={{
                     width: "150px",
                     overflow: "hidden",
                     whiteSpace: "nowrap",
                     textOverflow: "ellipsis",
-                  }}>
+                  }}
+                >
                   <OverlayTrigger
                     trigger="click"
                     placement="bottom"
@@ -168,8 +182,7 @@ const Navbar = ({
             </div>
           </div>
         </div>
-        </header>
-      
+      </header>
     </>
   );
 };

@@ -1,7 +1,30 @@
-.continuebtn{
+.airbnb-btn{
     background-color:#ff385c;
     width:100%;
     border: none;
     
 
 }
+.cardview{
+    display: flex;
+    justify-content:space-between;
+    width:40%;
+    margin-right: 10px;
+}
+.select-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .select-dates p {
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+  }
+  
+  .select-dates strong {
+    font-weight: bold;
+  }
+  

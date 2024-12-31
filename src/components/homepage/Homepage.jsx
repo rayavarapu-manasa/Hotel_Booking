@@ -4,6 +4,7 @@ import Picture from '../body/Picture'
 import Footer from '../footer/Footer'
 
 function Homepage() {
+    console.log("hii")
     return (
         <div>
             <Navbar />

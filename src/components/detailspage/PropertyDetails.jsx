@@ -1,47 +1,45 @@
-import React from "react";
-import { useLocation,useNavigate } from "react-router-dom";
-import "./PropertyDetails.css";
+import React, { useContext } from "react";
+import { useLocation } from "react-router-dom";
 import Navbar from "../navbar/Navbar";
+import ReserveCard from "./ReserveCard";
+import myFirstContext from "../context/SearchContext";
+import WifiIcon from "@mui/icons-material/Wifi";
+import PetsIcon from "@mui/icons-material/Pets";
+import YardIcon from "@mui/icons-material/Yard";
+import BathtubIcon from "@mui/icons-material/Bathtub";
 import BreakfastDiningIcon from "@mui/icons-material/BreakfastDining";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import BathtubIcon from "@mui/icons-material/Bathtub";
-import YardIcon from "@mui/icons-material/Yard";
-import PetsIcon from "@mui/icons-material/Pets";
-import WifiIcon from "@mui/icons-material/Wifi";
+import StarIcon from '@mui/icons-material/Star';
+import "./PropertyDetails.css";
 
 function PropertyDetails() {
-  const navigate=useNavigate();
+  const { searchData } = useContext(myFirstContext); // Access context here
   const location = useLocation();
   const { state } = location || {};
-  const { hotel } = state || {};
+  const { hotel, pricePerNight } = state || {};
 
   if (!hotel) {
     return <p className="text-center">No hotel data available.</p>;
   }
 
-  const handleReserve=()=>{
-    navigate("/book");
-  }
   return (
     <>
-
-      <Navbar />
+      <Navbar
+        initialDestination={searchData.destination}
+        initialCheckin={searchData.checkin}
+        initialCheckout={searchData.checkout}
+        initialGuests={searchData.guestSummary}
+      />
       <div className="container property">
-
-        <div>
-          <h4>{hotel.description || "Beautiful Hotel Stay"}</h4>
-        </div>
+        <h4>{hotel.description || "Beautiful Hotel Stay"}</h4>
 
         {/* Image Grid */}
         <div className="image-grid">
           {hotel.extraImgs?.length >= 4 ? (
             <div className="grid-container">
-              {/* Large image on the left */}
               <div className="image-item large-image">
                 <img src={hotel.imageUrl} alt="Hotel Main Image" />
               </div>
-
-              {/* Four smaller images on the right */}
               <div className="small-images">
                 {hotel.extraImgs.slice(0, 4).map((img, index) => (
                   <div className="image-item small-image" key={index}>
@@ -52,11 +50,7 @@ function PropertyDetails() {
             </div>
           ) : (
             <div className="image-item large-image">
-              <img
-                src={hotel.imageUrl}
-                alt="Main Hotel Image"
-                className="img-fluid"
-              />
+              <img src={hotel.imageUrl} alt="Main Hotel Image" className="img-fluid" />
             </div>
           )}
         </div>
@@ -69,7 +63,9 @@ function PropertyDetails() {
             <p><strong>Beds:</strong> {hotel.beds || "Not Available"}</p>
             <p><strong>Bathrooms:</strong> {hotel.bathrooms || "Not Available"}</p>
           </div>
-
+          <div>
+            <p><StarIcon /> {hotel.rating || "No reviews yet"}</p>
+          </div>
         </div>
 
         <hr />
@@ -77,10 +73,8 @@ function PropertyDetails() {
         {/* Amenities */}
         <div className="hotel-layout">
           <div className="left-content">
-            <h5>
-              <strong>What this place offers</strong>
-            </h5>
-            <div className="amenities">
+            <h5><strong>What this place offers</strong></h5>
+            <div className="amenities mb-4">
               <div className="amenities-left">
                 <p><WifiIcon /> Wifi</p>
                 <p><PetsIcon /> Pets allowed</p>
@@ -92,33 +86,39 @@ function PropertyDetails() {
                 <p><BreakfastDiningIcon /> Breakfast</p>
               </div>
             </div>
+
+
+            <hr className="my-4" />
+
+
+            <div className="rules-and-policies d-flex flex-row mt-5">
+              <div className="house-rules mb-4">
+                <h6 className="mb-3">House Rules</h6>
+                <p>Check-in after 2:00 PM</p>
+                <p>Checkout before 11:00 AM</p>
+                <p>2 Guests maximum</p>
+              </div>
+              <div className="cancellation-policy ms-5">
+                <h6 className="mb-3">Cancellation Policy</h6>
+                <p>This reservation is non-refundable</p>
+                <p>Review this Host’s full policy for details.</p>
+              </div>
+            </div>
           </div>
+
+
 
           <div className="right-content">
-            <div className="container mt-4">
-              <h3>Book Your Stay</h3>
-              <form>
-                <div className="mb-3">
-                  <label htmlFor="checkIn" className="form-label">Check-in</label>
-                  <input type="date" className="form-control" id="checkIn" />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="checkOut" className="form-label">Check-out</label>
-                  <input type="date" className="form-control" id="checkOut" />
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="guests" className="form-label">Guests</label>
-                  <input type="number" className="form-control" id="guests" placeholder="1" />
-                </div>
-                <button onClick={handleReserve} className="Reserve-btn">Reserve</button>
-
-                <p className="d-flex justify-content-center mt-2">You wont be charged yet</p>
-              </form>
-            </div>
-
+            <ReserveCard
+              pricePerNight={pricePerNight}
+              hotel={hotel}
+              checkin={searchData.checkin}
+              checkout={searchData.checkout}
+              guestSummary={searchData.guestSummary}
+            />
           </div>
         </div>
-      </div>
+      </div >
     </>
   );
 }
