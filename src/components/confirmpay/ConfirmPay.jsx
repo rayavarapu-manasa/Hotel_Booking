@@ -1,98 +1,22 @@
 import React, { useState, useContext } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import "./ConfirmPay.css";
 import myFirstContext from "../context/SearchContext";
-import axios from 'axios';
-import SignUp from "./SignUp";
+
+import LoginComp from "../navbar/LoginComp";
+
 const ConfirmPay = () => {
-  const navigateConfirm = useNavigate();
+  
   const { searchData } = useContext(myFirstContext);
   const location = useLocation();
-  const { hotel, pricePerNight, checkin, checkout, guestSummary } = location.state || {};
-  const [startDate, setStartDate] = useState(searchData.checkin || '1/1/2025');
-  const [endDate, setEndDate] = useState(searchData.checkout || '2/1/2025');
-  const [guests, setGuests] = useState(searchData.guestSummary || 1);
-  const [countryRegion, setCountryRegion] = useState("India (+91)");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [showOtpField, setShowOtpField] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [storeOtp, setStoreOtp] = useState()
-  const [Islogin,setIsLogin] = useState(false);
-
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-
-    const now = new Date();
-
-    // Get the current date and time components
-    const year = now.getFullYear();  // 4 digits
-    const month = now.getMonth() + 1;  // Month (1-12)
-    const day = now.getDate();  // Day of the month (1-31)
-    const hours = now.getHours();  // Hours (0-23)
-    const minutes = now.getMinutes();  // Minutes (0-59)
-    const seconds = now.getSeconds();  // Seconds (0-59)
-
-    // Combine these components to generate a unique number
-    const combined = `${year}${month}${day}${hours}${minutes}${seconds}`;
-
-    // Extract the last 4 digits of the combined string
-    const ipOtpForMobile = combined.slice(-4);  // Take the last 4 digits
-
-    setStoreOtp(ipOtpForMobile);
-    console.log(storeOtp, ipOtpForMobile);
-    const message = `Dear customer, use this OTP ${ipOtpForMobile} to signup into your Quality Thought Next account. This OTP will be valid for the next 15 mins.`;
-
-    // URL-encode the message
-    const encodedMessage = encodeURIComponent(message);
-
-    // API URL
-    const apiUrl = `https://login4.spearuc.com/MOBILE_APPS_API/sms_api.php?type=smsquicksend&user=qtnextotp&pass=987654&sender=QTTINF&t_id=1707170494921610008&to_mobileno=${phoneNumber}&sms_text=${encodedMessage}`;
-    axios.get(apiUrl).then((res) => { console.log(res) });
-    setShowOtpField(true);
-    console.log("Country/Region:", countryRegion);
-    console.log("Phone Number:", phoneNumber);
-
-
-  };
-
-  const handleConfirm = () => {
-    navigateConfirm("/signup", {
-      state: {
-        pricePerNight,
-        hotel,
-        checkin: startDate,
-        checkout: endDate,
-        guestSummary: guests,
-      },
-    });
-  };
-  const handleOtpSubmit = (event) => {
-    event.preventDefault();
-
-
-    if (otp.length !== 4 || !/^\d+$/.test(otp)) {
-      alert("Please enter a valid 6-digit OTP.");
-      return;
-    }
-  };
-
+  const {hotel,pricePerNight, checkin, checkout, guestSummary } = location.state || {};
   if (!hotel) {
-    return <p className="text-center">Hotel data not available.</p>;
+    return <p className="text-center">No hotel data available.</p>;
   }
-
-
-  const handleVerifyOtpForMobile = () => {
-    console.log(otp, storeOtp);
-    if (otp == storeOtp) {
-      setIsLogin(true);
-      alert('Mobile Number Verified');
-    } else {
-      alert('Invalid Otp');
-    }
-  }
-
+  const [startDate, setStartDate] = useState(searchData.checkin || '1/1/2025');
+  const [endDate, setEndDate] = useState(searchData.checkout || '1/2/2025');
+  const [guests, setGuests] = useState(searchData.guestSummary || 1);
+ 
   const calculateNights = () => {
     const checkinDate = new Date(startDate);
     const checkoutDate = new Date(endDate);
@@ -111,6 +35,7 @@ const ConfirmPay = () => {
     const serviceFee = basePrice * 0.2; // 20% service fee
     return nights > 0 ? basePrice + serviceFee : 0;
   };
+  const totalAmount=calculateTotal();
 
   const calculateServiceFee = () => {
     const nights = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
@@ -153,75 +78,7 @@ const ConfirmPay = () => {
             </div>
 
             <hr />
-
-            <div className="">
-              <h3 className="text-start mt-5">Log in or sign up to book</h3>
-              <form onSubmit={showOtpField ? handleOtpSubmit : handleSubmit}>
-                {!showOtpField && (
-                  <>
-                    <div className="mb-3 mt-4">
-                      <select
-                        id="countryRegion"
-                        value={countryRegion}
-                        onChange={(e) => setCountryRegion(e.target.value)}
-                        className="form-select"
-                      >
-                        <option>India (+91)</option>
-                      </select>
-                    </div>
-                    <div className="mb-3">
-                      <input
-                        type="text"
-                        id="phoneNumber"
-                        placeholder="Phone number"
-                        value={phoneNumber}
-                        maxLength="10"
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="form-control"
-                        required
-                      />
-                    </div>
-                    <button className="btn btn-danger w-100" type="submit">
-                      Continue
-                    </button>
-                  </>
-                )}
-
-                {showOtpField && (
-
-                <>
-                {!Islogin ? (
-                <div>
- 
-                    <div className="mb-3 mt-4">
-                      <label htmlFor="otp" className="fw-bold mb-3">Enter OTP</label>
-                      <input
-                        type="text"
-                        id="otp"
-                        placeholder="6-digit OTP"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                    <button className="btn btn-danger w-100" onClick={handleVerifyOtpForMobile}>
-                      Verify OTP
-                    </button>
-                 
-                </div>
-                ):(
-                <div>
-               <SignUp/>
-                </div>
-                )}
-                </>
-                  
-
-
-                
-                )}
-              </form>
-            </div>
+            <LoginComp totalAmount={totalAmount}/>
           </div>
 
           <div className="col-md-5">

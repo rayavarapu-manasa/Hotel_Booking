@@ -5,7 +5,7 @@ import myFirstContext from '../context/SearchContext';
 import { useContext } from 'react';
 
 function ReserveCard({ pricePerNight, hotel }) {
-  const { searchData } = useContext(myFirstContext);
+  const { searchData, setSearchData } = useContext(myFirstContext); 
   const locationData = useLocation();
   const navigateReserve = useNavigate();
   const { state } = locationData || {};
@@ -21,18 +21,43 @@ function ReserveCard({ pricePerNight, hotel }) {
     const serviceFee = basePrice * 0.2;
     return basePrice + serviceFee;
   };
+   const totalCost = calculateTotal();
 
   const calculateServiceFee = () => {
     const nights = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
     const basePrice = nights * pricePerNight;
     return basePrice * 0.2; // 20% service fee
   };
+  const serviceFee=calculateServiceFee();
+
   // Navigate to the booking page
+  // const ChangeReserve = () => {
+  //   navigateReserve("/book", {
+  //     state: { hotel,pricePerNight,checkin,checkout,guestSummary }
+  //   });
+  // };
   const ChangeReserve = () => {
+    const nights = Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24));
+    const basePrice = nights * pricePerNight;
+    const serviceFee = basePrice * 0.2;
+    const totalCost = basePrice + serviceFee;
+  
+    setSearchData((prevData) => ({
+      ...prevData,
+      checkin: startDate,
+      checkout: endDate,
+      guestSummary: guests,
+      pricePerNight,
+      serviceFee,
+      totalCost,
+    }));
+  
+ 
     navigateReserve("/book", {
-      state: { hotel,pricePerNight,checkin,checkout,guestSummary }
+      state: { hotel, pricePerNight, checkin: startDate, checkout: endDate, guestSummary: guests },
     });
   };
+  
 
   return (
     <div className="airbnb-card">

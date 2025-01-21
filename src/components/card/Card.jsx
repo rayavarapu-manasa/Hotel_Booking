@@ -1,22 +1,20 @@
-// import React, { useState, useEffect } from "react";
-// import { useLocation, useNavigate } from "react-router-dom";
+// import React, { useState, useEffect, useContext } from "react";
+// import { useNavigate } from "react-router-dom";
 // import axios from "axios";
 // import Navbar from "../navbar/Navbar";
-// import "./Card.css";
 // import myFirstContext from "../context/SearchContext";
+// import "./Card.css";
 
 // const Card = () => {
-//   const { searchData } = useContext(myFirstContext);
-//   const locationData = useLocation();
+//   const { searchData } = useContext(myFirstContext); 
+//   const { destination, checkin, checkout, guestSummary } = searchData; 
 //   const navigateView = useNavigate();
-//   const { state } = locationData || {};
-//   const { destination, checkin, checkout, guestSummary } = state || {};
 //   const [data, setData] = useState([]);
 
 //   useEffect(() => {
 //     axios
 //       .get(
-//         `http://183.82.106.55:9103/city/search?destination=${destination}&maxPersons=2`
+//         `http://183.82.106.55:9103/city/search?destination=${destination}&maxPersons=4`
 //       )
 //       .then((res) => {
 //         console.log("API Response Data:", res.data);
@@ -25,33 +23,29 @@
 //       .catch((err) => {
 //         console.error("Error fetching data:", err);
 //       });
-//   }, [searchData.destination]);
+//   }, [destination]);
 
 //   const handleView = (hotel) => {
-//     // Passing hotel data including pricePerNight
 //     navigateView("/rooms", { state: { hotel, pricePerNight: hotel.pricePerNight } });
 //   };
 
 //   return (
 //     <>
 //       <Navbar
-//         initialDestination={searchData.destination}
-//         initialCheckin={searchData.checkin}
-//         initialCheckout={searchData.checkout}
-//         initialGuests={searchData.guestSummary}
+//         initialDestination={destination}
+//         initialCheckin={checkin}
+//         initialCheckout={checkout}
+//         initialGuests={guestSummary}
 //       />
 //       <div className="container" style={{ marginBottom: "60px" }}>
 //         {data.length > 0 ? (
 //           <div className="row">
-//             {dataata.map((city) =>
+//             {data.map((city) =>
 //               city.hotels.map((hotel) => (
 //                 <div className="col-lg-4" key={hotel.id}>
 //                   <div className="card shadow-sm mt-4">
 //                     <img
-//                       src={
-//                         hotel.imageUrl ||
-//                         "https://a0.muscache.com/im/pictures/miso/Hosting-31884678/original/bd194e6d-43af-4342-b3ae-d09088d2afbb.jpeg?im_w=1200&im_format=avif"
-//                       }
+//                       src={hotel.imageUrl || "default_image_url"}
 //                       className="card-img-top"
 //                       alt="Property"
 //                       style={{ height: "200px", objectFit: "cover" }}
@@ -97,7 +91,6 @@
 
 // export default Card;
 
-
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -106,16 +99,14 @@ import myFirstContext from "../context/SearchContext";
 import "./Card.css";
 
 const Card = () => {
-  const { searchData } = useContext(myFirstContext); // Access context here
-  const { destination, checkin, checkout, guestSummary } = searchData; // Get searchData from context
+  const { searchData, setSearchData } = useContext(myFirstContext); // Assuming setSearchData is added to the context
+  const { destination, checkin, checkout, guestSummary } = searchData;
   const navigateView = useNavigate();
   const [data, setData] = useState([]);
 
   useEffect(() => {
     axios
-      .get(
-        `http://183.82.106.55:9103/city/search?destination=${destination}&maxPersons=2`
-      )
+      .get(`http://183.82.106.55:9103/city/search?destination=${destination}&maxPersons=4`)
       .then((res) => {
         console.log("API Response Data:", res.data);
         setData(res.data);
@@ -126,6 +117,12 @@ const Card = () => {
   }, [destination]);
 
   const handleView = (hotel) => {
+    // Update the hotel data in the context
+    setSearchData((prevState) => ({
+      ...prevState,
+      hotel,
+    }));
+
     navigateView("/rooms", { state: { hotel, pricePerNight: hotel.pricePerNight } });
   };
 

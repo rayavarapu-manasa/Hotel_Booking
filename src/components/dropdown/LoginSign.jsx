@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import SignUp from '../confirmpay/SignUp';
-import Paybtn from '../payment/Paybtn';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
-function LoginComp({totalAmount,hotel}) {
+
+function LoginComp({totalAmount}) {
+
   const navigate = useNavigate();
   const [countryRegion, setCountryRegion] = useState("India (+91)");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -15,6 +16,7 @@ function LoginComp({totalAmount,hotel}) {
   const [isLogin, setIsLogin] = useState(false);
   const [isExistingUser, setIsExistingUser] = useState(false);
   const [phoneError, setPhoneError] = useState("");
+
 
   const clientId = "198103472630-ps2um9rertoki4vn2k6s2f3e0e0ouo8l.apps.googleusercontent.com";
 
@@ -110,7 +112,7 @@ function LoginComp({totalAmount,hotel}) {
     if (otp === storeOtp) {
       setIsLogin(true);
       if (isExistingUser) {
-      console.log(isExistingUser)
+      console.log(isExistingUser);
       } else {
         alert('Mobile Number Verified. Redirecting to SignUp...');
       }
@@ -121,6 +123,7 @@ function LoginComp({totalAmount,hotel}) {
 
   return (
     <div>
+
       <form onSubmit={showOtpField ? handleOtpSubmit : handleSubmit}>
         {!showOtpField && (
           <>
@@ -190,7 +193,7 @@ function LoginComp({totalAmount,hotel}) {
               </div>
             ) : (
               <div>
-                {isExistingUser ? <Paybtn phoneNumber={phoneNumber}  totalAmount={totalAmount} /> : <SignUp phoneNumber={phoneNumber} />}
+                {!isExistingUser && <SignUp phoneNumber={phoneNumber} />}
 
               </div>
             )}
@@ -199,8 +202,11 @@ function LoginComp({totalAmount,hotel}) {
       </form>
 
 
+
     </div>
   );
 }
 
 export default LoginComp;
+
+  

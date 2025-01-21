@@ -7,7 +7,7 @@ import CalenderInput from "../calender/CalenderInput";
 import "./Navbar.css";
 import dayjs from "dayjs";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LoginComp from "./LoginComp";
+import LoginSign from "../dropdown/LoginSign";
 import { Modal } from 'react-bootstrap';
 
 const Navbar = ({
@@ -27,7 +27,7 @@ const Navbar = ({
     pets: 0,
   });
 
-  const toggleModal = () => {setShowModal(!showModal);}
+  const toggleModal = () => { setShowModal(!showModal); }
 
   const [dates, setDates] = useState([
     dayjs(initialCheckin).isValid() ? dayjs(initialCheckin) : null,
@@ -47,7 +47,7 @@ const Navbar = ({
   };
 
   const handleGuestUpdate = (data) => {
-    // Ensure all values are integers
+
     const updatedData = {
       adults: parseInt(data.adults, 10) || 0,
       children: parseInt(data.children, 10) || 0,
@@ -125,20 +125,20 @@ const Navbar = ({
               <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <li><a className="dropdown-item text-decoration-none" onClick={toggleModal}>Login</a></li>
                 <li><a className="dropdown-item text-decoration-none" onClick={toggleModal}>signup</a></li>
+                <li><a className="dropdown-item text-decoration-none" >Customer Support</a></li>
               </ul>
             </div>
           </div>
         </div>
         {/*Account Info*/}
-        
-        <Modal show={showModal} onHide={toggleModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Log in or Sign up</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <LoginComp />
-        </Modal.Body>
-      </Modal>
+
+        <Modal show={showModal} onHide={toggleModal} keyboard={false} backdrop="static" centered>
+          <Modal.Header  closeButton>
+          </Modal.Header>
+          <Modal.Body>
+            <LoginSign/>
+          </Modal.Body>
+        </Modal>
 
         {/* Search bar */}
         <div className="mt-4">

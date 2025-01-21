@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./SignUp.css";
+import "./SignUpPage.css";
 import SignupUi from "./SignupUi";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -16,38 +16,13 @@ const SignUp = ({ phoneNumber }) => {
     dob: "",
     email: "",
   });
-  const [emailError, setEmailError] = useState("");
- 
+
   const handleOnChange = (event) => {
     const { id, value } = event.target;
-  
-    // Remove leading spaces
-    const sanitizedValue = value.replace(/\s+/g, "");
-  
     setData((prevData) => ({
       ...prevData,
-      [id]: sanitizedValue,
+      [id]: value,
     }));
-  };
-  
-
-
-  const handleEmailBlur = () => {
-    validateGmail(data.email);
-  };
-
-  const validateGmail = (email) => {
-    if (!email) {
-      setEmailError(""); // Clear error if the field is blank
-      return;
-    }
-
-    const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-    if (!gmailRegex.test(email)) {
-      setEmailError("Please enter a valid Gmail address.");
-    } else {
-      setEmailError("");
-    }
   };
 
   const handleDobChange = (date) => {
@@ -61,10 +36,6 @@ const SignUp = ({ phoneNumber }) => {
 
 
   const handlePay = async () => {
-    if (emailError) {
-      setEmailError("Please enter the valid email address.");
-      return;
-    }
     const dataForPost = {
       fullName: `${data.firstName} ${data.lastName}`,
       email: data.email,
@@ -157,10 +128,8 @@ const SignUp = ({ phoneNumber }) => {
               placeholder="Email"
               value={data.email}
               onChange={handleOnChange}
-              onBlur={handleEmailBlur}
               required
             />
-            {emailError && <div className="text-danger mt-2">{emailError}</div>}
             <span style={{ color: "#666" }}>
               We'll email you trip confirmations and receipts.
             </span>
